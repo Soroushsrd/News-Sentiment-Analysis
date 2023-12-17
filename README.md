@@ -1,6 +1,6 @@
 # News Sentiment Analysis
 
-I wrote this code using [NewsData][https://newsdata.io/] API. You can sign up and use their free package to access recent news.
+I wrote this code using [NewsData](https://newsdata.io/) API. You can sign up and use their free package to access recent news.
 You can also get their premium package which allows you to access historical data and more options.
 
 
