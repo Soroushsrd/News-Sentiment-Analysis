@@ -6,7 +6,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 API_KEY = 'your_api'
 endpoint = 'https://newsdata.io/api/1/news'
 
-keywords = ['BTC', 'bitcoin', 'crypto']
+keywords = ['USD/JPY']
 
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
@@ -29,8 +29,8 @@ def preprocess_text(text):
 
 results = []
 processed_articles = []
-all_summaries = []  # List to store all summaries
-
+sid = SentimentIntensityAnalyzer()
+sentiments=[]
 for keyword in keywords:
     params = {
         'apikey': API_KEY,
@@ -53,20 +53,21 @@ for article_index, article in enumerate(results):
         max_chunk_length = 800  # Define a maximum length for each chunk
         article_chunks = [article_text[i:i + max_chunk_length] for i in
                           range(0, len(article_text), max_chunk_length)]
-        preprocessed_articles = preprocess_text(article_text)
-        processed_articles.append(preprocessed_articles)
+        all_article_summaries = []  # Create a list for each article's summaries
+        combined_summary=''
         for chunk in article_chunks:
-            summarized_text = summarizer(chunk, max_length=100, min_length=30, do_sample=False)
+            preprocessed_chunk = preprocess_text(chunk)  # Preprocess the chunk
+            summarized_text = summarizer(preprocessed_chunk, max_length=100, min_length=30, do_sample=False)
             summarized_text = summarized_text[0]['summary_text']
-            all_summaries.append(summarized_text)
+            combined_summary += summarized_text + ' '  # Concatenate each chunk's summary
 
         # After processing all chunks, save the article title and its corresponding summary
-        save_to_text_file(title, all_summaries[article_index])
+        save_to_text_file(title, combined_summary)
+        # Sentiment analysis using NLTK's VADER
+        sentiments.append(sid.polarity_scores(combined_summary))
+
     else:
         print(f"No content found for article '{title}'")
-# Sentiment analysis using NLTK's VADER
-sid = SentimentIntensityAnalyzer()
-sentiments = [sid.polarity_scores(article) for article in processed_articles]
 
 # Extract compound scores for mean calculation and visualization
 compound_scores = [sentiment['compound'] for sentiment in sentiments]
