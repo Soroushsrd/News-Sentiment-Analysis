@@ -2,17 +2,20 @@ import requests
 from transformers import pipeline
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from datetime import datetime
 
-API_KEY = 'your_api'
+
+API_KEY = 'pub_33688abe8a40dce999fd00ee09f29044ca287'
 endpoint = 'https://newsdata.io/api/1/news'
 
-keywords = ['USD/JPY']
+keywords = ['BTC']
+today_date = datetime.today().strftime('%Y-%m-%d-%H-%M')
 
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 
 def save_to_text_file(title, summary):
-    with open('news_articles.txt', 'a', encoding='utf-8') as file:
+    with open(f'news_articles_{today_date}.txt', 'a', encoding='utf-8') as file:
         file.write(f"Title: {title}\n")
         file.write(f"Summary: {summary}\n\n")
 
@@ -31,6 +34,8 @@ results = []
 processed_articles = []
 sid = SentimentIntensityAnalyzer()
 sentiments=[]
+
+#add in category and country
 for keyword in keywords:
     params = {
         'apikey': API_KEY,
@@ -50,7 +55,7 @@ for article_index, article in enumerate(results):
     title = article['title']
     article_text = article['content']
     if article_text:
-        max_chunk_length = 800  # Define a maximum length for each chunk
+        max_chunk_length = 500  # Define a maximum length for each chunk
         article_chunks = [article_text[i:i + max_chunk_length] for i in
                           range(0, len(article_text), max_chunk_length)]
         all_article_summaries = []  # Create a list for each article's summaries
