@@ -5,7 +5,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from datetime import datetime
 
 
-API_KEY = 'pub_33688abe8a40dce999fd00ee09f29044ca287'
+API_KEY = 'Your_API_Key'
 endpoint = 'https://newsdata.io/api/1/news'
 
 keywords = ['BTC']
